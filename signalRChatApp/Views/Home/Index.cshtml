@@ -1,0 +1,29 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+<script>
+    $(document).ready(function () {
+        var username = window.prompt("Enter name");
+        $("#usernamelbl").text(username);
+        $("msg").val("");
+        proxy = $.connection.signalRChatHub;
+        proxy.client.receiveMessage = function (username, msg) {
+            console.log(username, msg);
+            $("#messages").append("<h3>" + username + "->" + msg + "</h3>");
+        }
+        $.connection.hub.start().done(function () {
+            $("#sendbtn").click(function () {
+                proxy.server.broadcastmessage(username, $("#msg").val());
+                $("#msg").val("");
+            });
+
+        });
+    });
+</script>
+<h2>Group Chat</h2>
+<label id="usernamelbl"></label>
+<input type="text" name="msg" id="msg">
+<input type="button" id="sendbtn" value="send" />
+<div id="messages">
+</div>
